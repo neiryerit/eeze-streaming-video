@@ -9,7 +9,7 @@ Java developer test
 1. Execute ***run*** option from your IDE. or Execute the command java -jar <path>/eeze-streaming-video/target/streaming-1.0.0.jar.
 2. Open the site http://localhost:8080/swagger-ui/index.html. That contains all the APIs.
 3. Select an API and click on ***try it out*** to test it.
-
+> note: three records will be preloaded at the moment of run.
 ## APIs
 **POST /videos**: allows to add/publish a video
 
