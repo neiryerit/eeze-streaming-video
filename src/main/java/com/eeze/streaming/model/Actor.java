@@ -5,11 +5,7 @@ import java.util.Set;
 
 import com.eeze.streaming.util.ActorRole;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +20,7 @@ public class Actor {
     private long id;
     private String name;
     private String character;
+    @Enumerated(EnumType.STRING)
     private ActorRole role;
 
     @ManyToMany(mappedBy = "performers")

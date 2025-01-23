@@ -35,18 +35,20 @@ public class VideoService implements IVideoServ {
     public VideoData saveVideo(VideoReq videoReq) {
 
         log.debug("init saveVideo");
-                
-        List<Actor> actors = VideoMapper.INSTANCE.toActor(videoReq.getMetadata().getPerformers());
-        actors = actorRepo.saveAll(actors);
 
+        // save the video as active and get the Video object.
         Video video = VideoMapper.INSTANCE.toEntity(videoReq);
         video.setStatus(Status.ACTIVE);
 
-        video.setPerformers(actors);
+        // save actors
+        List<Actor> actors = VideoMapper.INSTANCE.toActor(videoReq.getMetadata().getPerformers());
+        actors = actorRepo.saveAll(actors);
 
+        // include the actors(cast) to the video
+        video.setPerformers(actors);
         Video savedVideo = videoRepo.save(video);
 
-        log.info("video {} was added",savedVideo.getId());
+        log.info("video {} was added", savedVideo.getId());
 
         return VideoMapper.INSTANCE.toDto(savedVideo);
     }
@@ -54,18 +56,26 @@ public class VideoService implements IVideoServ {
     @Override
     public VideoData updateVideo(UUID videoId, VideoReq videoReq) {
 
-        log.debug("init updateVideo {}",videoId);
+        log.debug("init updateVideo {}", videoId);
 
         Video video = searchVideoById(videoId);
 
         if (video != null) {
-            video = VideoMapper.INSTANCE.updateVideo(video, videoReq);
+            // save actors
+            List<Actor> actors = VideoMapper.INSTANCE.toActor(videoReq.getMetadata().getPerformers());
+            actors = actorRepo.saveAll(actors);
+
+            //map from videoReq(dto) to Video(entity)
+            video = VideoMapper.INSTANCE.toUpdateVideo(video, videoReq);
+            
+            // include the actors(cast) to the video
+            video.setPerformers(actors);
             Video updatedVideo = videoRepo.save(video);
 
-            log.info("video {} was updated",updatedVideo.getId());
+            log.info("video {} was updated", updatedVideo.getId());
             return VideoMapper.INSTANCE.toDto(updatedVideo);
         } else {
-            log.error("video {} could not be found for updating",videoId);
+            log.error("video {} could not be found for updating", videoId);
             return null;
         }
 
@@ -85,7 +95,7 @@ public class VideoService implements IVideoServ {
             log.info("video {} was deleted", videoId);
             return VideoMapper.INSTANCE.toDto(foundVideo);
         } else {
-            log.error("video {} could not be found for deletion",videoId);
+            log.error("video {} could not be found for deletion", videoId);
             return null;
         }
 
@@ -97,6 +107,7 @@ public class VideoService implements IVideoServ {
         log.debug("init loadVideo of ", videoId);
 
         Video video = searchVideoById(videoId);
+
         if (video != null && video.getStatus().equals(Status.ACTIVE)) {
             video.setImpressions(video.getImpressions() + 1);
             video = videoRepo.save(video);
@@ -114,10 +125,11 @@ public class VideoService implements IVideoServ {
         log.debug("ini playVideo of {}", videoId);
 
         Video video = searchVideoById(videoId);
+
         if (video != null && video.getStatus().equals(Status.ACTIVE)) {
             video.setViews(video.getViews() + 1);
             video = videoRepo.save(video);
-            
+
             log.info("The video {} has been found to play", videoId);
             return VideoMapper.INSTANCE.toPlayDto(video);
         }
@@ -131,19 +143,20 @@ public class VideoService implements IVideoServ {
         log.debug("ini getEngagements of {}", videoId);
 
         Video video = searchVideoById(videoId);
+
         if (video != null && video.getStatus().equals(Status.ACTIVE)) {
 
             log.info("success engagement retrival for video:{}", videoId);
             return VideoMapper.INSTANCE.toEngagementDto(video);
         }
-        log.error("video {} could not be found for getting engagements",videoId);
+        log.error("video {} could not be found for getting engagements", videoId);
         return null;
     }
 
     @Override
     public List<VideoBrief> getVideoList(String director, Integer releasedYear) {
 
-        log.debug("init getVideoList. FILTERS=[director:{}, releasedYear:{}]",director, releasedYear);
+        log.debug("init getVideoList. FILTERS=[director:{}, releasedYear:{}]", director, releasedYear);
 
         List<Video> videoList = videoRepo.findByQueryParams(director, releasedYear, Status.ACTIVE.name());
 

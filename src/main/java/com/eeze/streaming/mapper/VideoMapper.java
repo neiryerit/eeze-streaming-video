@@ -73,7 +73,7 @@ public interface VideoMapper {
     @Mapping(source = "videoReq.metadata.runningTime", target = "runningTime")
     @Mapping(source = "videoReq.metadata.performers", target = "performers")
     @Mapping(source = "videoReq.content", target = "content")
-    Video updateVideo(@MappingTarget Video video, VideoReq videoReq);
+    Video toUpdateVideo(@MappingTarget Video video, VideoReq videoReq);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "title", target = "title")

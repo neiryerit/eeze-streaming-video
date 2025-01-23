@@ -18,7 +18,11 @@ import com.eeze.streaming.domain.Error;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-
+/*
+ * Class aimed for controling all exceptions and give a customized response to the consumer
+ * while the whole stack error is wrote in the execution console of the project.
+ * All application errors will be caught here
+ */
 @RestControllerAdvice
 public class ErrorHandler {
 
@@ -42,6 +46,8 @@ public class ErrorHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> handleConstraintViolationExceptions(ConstraintViolationException ex) {
 
+        log.error("CLIENT ERROR: {}", ex.getMessage());
+
         List<String> messages = ex.getConstraintViolations().stream()
                 .map(err -> err.getPropertyPath().toString() + ": " + err.getMessage())
                 .collect(Collectors.toList());
@@ -52,11 +58,15 @@ public class ErrorHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 
+        log.error("CLIENT ERROR: {}", ex.getMessage());
+
         return ResponseEntity.badRequest().body(getSingleMsg("Malformed JSON request: " + ex.getMessage()));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+
+        log.error("CLIENT ERROR: {}", ex.getMessage());
 
         return ResponseEntity.badRequest().body(
                 getSingleMsg(String.format("Missing required parameter: %s", ex.getParameterName())));
@@ -64,6 +74,8 @@ public class ErrorHandler {
 
     @ExceptionHandler(TypeMismatchException.class)
     public ResponseEntity<?> handleTypeMismatchException(TypeMismatchException ex) {
+
+        log.error("CLIENT ERROR: {}", ex.getMessage());
 
         return ResponseEntity.badRequest().body(
                 getSingleMsg(
@@ -74,6 +86,8 @@ public class ErrorHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
 
+        log.error("CLIENT ERROR: {}", ex.getMessage());
+        
         return ResponseEntity.badRequest().body(getSingleMsg("Invalid request: " + ex.getMessage()));
     }
 

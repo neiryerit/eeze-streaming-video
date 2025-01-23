@@ -2,16 +2,15 @@ package com.eeze.streaming;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 import com.eeze.streaming.domain.Metadata;
 import com.eeze.streaming.domain.Performer;
 import com.eeze.streaming.domain.dto.VideoReq;
@@ -20,7 +19,7 @@ import com.google.gson.Gson;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AddVideoTests {
+public class UpdateTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,12 +27,12 @@ public class AddVideoTests {
     private Gson gson = new Gson();
 
     @Test
-    void testAddOk() throws Exception {
+    void testUpdateOK() throws Exception {
 
         // Prepare the request data
 
         Performer actor1 = new Performer();
-        actor1.setName("keanu reeves");
+        actor1.setName("lolita reeves");
         actor1.setCharacter("the boss");
         actor1.setRole(ActorRole.LEAD.name());
         Performer actor2 = new Performer();
@@ -58,25 +57,24 @@ public class AddVideoTests {
         videoReq.setMetadata(metadata);
 
         // do the call to the api
-        mockMvc.perform(post("/videos")
+        mockMvc.perform(put("/videos/6c327d34-cdff-4cda-9d74-8f927d89dc3a")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(videoReq)))
-                .andExpect(status().isCreated()) // Expect HTTP status 201
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.content").value("dummy"));
+                .andExpect(status().isOk()); // Expect HTTP status 200
 
     }
 
     @Test
-    void testAddUserError() throws Exception{
+    void testUpdateUserError() throws Exception{
 
         VideoReq videoReq = new VideoReq();
         videoReq.setContent("dummy");
 
         // do the call to the api
-        mockMvc.perform(post("/videos")
+        mockMvc.perform(put("/videos/6c327d34-cdff-4cda-9d74-8f927d89dc3a")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(videoReq)))
                 .andExpect(status().isBadRequest()); // Expect HTTP status 400
     }
+
 }
