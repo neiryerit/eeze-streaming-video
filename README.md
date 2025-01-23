@@ -6,10 +6,13 @@ Java developer test
 2. Execute command: mvn clean install from a terminal or clicking right on the project -> build|compile|install depending of your IDE.
 
 ### Run it local:
-1. Execute ***run*** option from your IDE. or Execute the command java -jar <path>/eeze-streaming-video/target/streaming-1.0.0.jar.
+1. Execute ***run*** option from your IDE. or Execute the command java -jar <path>/eeze-streaming-video/target/streaming-1.0.0.war
 2. Open the site http://localhost:8080/swagger-ui/index.html. That contains all the APIs.
 3. Select an API and click on ***try it out*** to test it.
 > note: three records will be preloaded at the moment of run.
+
+> streaming-1.0.0.war is located in https://github.com/neiryerit/eeze-streaming-video/releases/tag/v1.0.0 just in case it'll not possible to use an IDE
+
 ## APIs
 **POST /videos**: allows to add/publish a video
 
